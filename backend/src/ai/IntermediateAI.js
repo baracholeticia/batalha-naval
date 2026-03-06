@@ -7,17 +7,11 @@ export default class IntermediateAI extends BaseAI {
 
     getBestMove(opponentBoard) {
         const availableMoves = this._getAvailableMoves(opponentBoard);
-        
-        if (availableMoves.length === 0) {
-            return null;
-        }
+        if (availableMoves.length === 0) return null;
+        const boardView = opponentBoard.getBoardView(true);
+        const possibleTargets = this._getAdjacentTargetsFromBoard(boardView);
 
-        let possibleTargets = [];
-        if (this.lastHits && this.lastHits.length > 0) {
-            possibleTargets = this._getAdjacentTargets(availableMoves);
-        }
-
-     if (possibleTargets.length > 0) {
+        if (possibleTargets.length > 0) {
             const randomIndex = Math.floor(Math.random() * possibleTargets.length);
             return possibleTargets[randomIndex];
         }
@@ -26,26 +20,30 @@ export default class IntermediateAI extends BaseAI {
         return availableMoves[randomIndex];
     }
 
-    _getAdjacentTargets(availableMoves) {
+    _getAdjacentTargetsFromBoard(boardView) {
         const targets = [];
         const directions = [
-            { r: -1, c: 0 },
-            { r: 1, c: 0 },
-            { r: 0, c: -1 },
-            { r: 0, c: 1 }
+            {r: -1, c: 0}, 
+            {r: 1, c: 0},  
+            {r: 0, c: -1}, 
+            {r: 0, c: 1}   
         ];
 
-        for (const hit of this.lastHits) {
-            for (const dir of directions) {
-                const checkRow = hit.row + dir.r;
-                const checkCol = hit.col + dir.c;
-                const isAvailable = availableMoves.some(move => move.row === checkRow && move.col === checkCol);
-                
-                if (isAvailable) {
-                    const alreadyAdded = targets.some(t => t.row === checkRow && t.col === checkCol);
+        for (let r = 0; r < 10; r++) {
+            for (let c = 0; c < 10; c++) {
+                if (boardView[r][c] === 'HIT') {
+                    for (const dir of directions) {
+                        const checkRow = r + dir.r;
+                        const checkCol = c + dir.c;
 
-                    if (!alreadyAdded) {
-                        targets.push({ row: checkRow, col: checkCol });
+                        if (checkRow >= 0 && checkRow < 10 && checkCol >= 0 && checkCol < 10) {
+                            if (boardView[checkRow][checkCol] === 'WATER') {
+                                const alreadyAdded = targets.some(t => t.row === checkRow && t.col === checkCol);
+                                if (!alreadyAdded) {
+                                    targets.push({ row: checkRow, col: checkCol });
+                                }
+                            }
+                        }
                     }
                 }
             }
