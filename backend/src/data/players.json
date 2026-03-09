@@ -26,5 +26,33 @@
       "taxaDerrota": 0
     },
     "medalhas": []
+  },
+  {
+    "id": "1773073710929",
+    "login": "mathleal",
+    "nome": "matheus",
+    "senha": "12345678",
+    "estatisticas": {
+      "partidas": 1,
+      "vitorias": 1,
+      "derrotas": 0,
+      "taxaVitoria": 1,
+      "taxaDerrota": 0
+    },
+    "medalhas": []
+  },
+  {
+    "id": "1773075212806",
+    "login": "danferreira",
+    "nome": "Daniel",
+    "senha": "12345678",
+    "estatisticas": {
+      "partidas": 1,
+      "vitorias": 1,
+      "derrotas": 0,
+      "taxaVitoria": 1,
+      "taxaDerrota": 0
+    },
+    "medalhas": []
   }
 ]

@@ -1,27 +1,70 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Board from '../components/Board';
 import { mapBackendToFrontendBoard } from '../utils/BoardMapper';
 import './Game.css';
+import hitAudio from '../assets/hit.mp3';
+import missAudio from '../assets/miss.mp3';
+import soundtrackAudio from '../assets/soundtrack.mp3';
+
+// Efeitos sonoros rápidos podem continuar no escopo global sem problemas
+const somHit = new Audio(hitAudio);
+const somMiss = new Audio(missAudio);
+somHit.volume = 0.5; 
+somMiss.volume = 0.5;
 
 export default function Game() {
   const navigate = useNavigate();
   const gameId = localStorage.getItem('currentGameId');
   const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
+  const prevOpponentBoard = useRef(Array(100).fill('empty'));
   const [gameState, setGameState] = useState(null);
   const [playerBoard, setPlayerBoard] = useState(Array(100).fill('empty'));
   const [opponentBoard, setOpponentBoard] = useState(Array(100).fill('empty'));
   const [isMyTurn, setIsMyTurn] = useState(false);
-  
+  const [animatingIndex, setAnimatingIndex] = useState(null);
+  const [aiAnimatingIndex, setAiAnimatingIndex] = useState(null); 
+  const prevPlayerBoard = useRef(Array(100).fill('empty'));
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [selectedMoveShip, setSelectedMoveShip] = useState('');
   const [campaignStage, setCampaignStage] = useState(() => {
     return parseInt(localStorage.getItem('campaignStage')) || 1;
   });
+  
+  const [isMuted, setIsMuted] = useState(false);
 
-  // 1. Cronômetro de Partida
+  const trilhaSonoraRef = useRef(null);
+
+  useEffect(() => {
+    trilhaSonoraRef.current = new Audio(soundtrackAudio);
+    trilhaSonoraRef.current.loop = true;
+    trilhaSonoraRef.current.volume = 0.1;
+
+    // 
+    return () => {
+      if (trilhaSonoraRef.current) {
+        trilhaSonoraRef.current.pause();
+        trilhaSonoraRef.current.currentTime = 0;
+      }
+    };
+  }, []); 
+
+  
+  useEffect(() => {
+    if (trilhaSonoraRef.current) {
+      trilhaSonoraRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  const startMusic = () => {
+    if (trilhaSonoraRef.current && trilhaSonoraRef.current.paused) {
+      trilhaSonoraRef.current.play().catch(err => console.log("Aguardando interação..."));
+    }
+  };
+
+  // Cronômetro de Partida
   useEffect(() => {
     let interval;
     if (gameState?.state === 'playing') {
@@ -36,7 +79,7 @@ export default function Game() {
     return `${m}:${s}`;
   };
 
-  // 2. Polling do Backend
+  // Polling do Backend
   const fetchGameState = async () => {
     if (!gameId) return;
     try {
@@ -65,9 +108,10 @@ export default function Game() {
     return () => clearInterval(interval);
   }, []);
 
-  // 3. Ações de Combate
   const handlePlayerAttack = async (idx) => {
+    startMusic();
     if (!isMyTurn || gameState?.state !== 'playing') return;
+    setAnimatingIndex(idx);
     const row = Math.floor(idx / 10);
     const col = idx % 10;
 
@@ -77,11 +121,89 @@ export default function Game() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ row, col })
       });
-      fetchGameState(); 
+      
+      setTimeout(() => {
+          setAnimatingIndex(null);       
+          fetchGameState();       
+      }, 500); 
+
     } catch (error) {
       alert("Erro ao atacar!");
     }
   };
+
+  // Efeitos sonoros - ataque do Jogador
+  useEffect(() => {
+    if (!gameState || gameState.state !== 'playing') {
+      prevOpponentBoard.current = opponentBoard;
+      return;
+    }
+
+    const prev = prevOpponentBoard.current;
+    const current = opponentBoard;
+
+    const changedIndex = current.findIndex((cell, i) => prev[i] !== cell);
+
+    if (changedIndex !== -1) {
+      const estadoAntigo = prev[changedIndex];
+      const estadoNovo = current[changedIndex];
+      
+      console.log(`🎯 TABULEIRO INIMIGO MUDOU! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
+
+      if (estadoAntigo !== 'empty' || (estadoNovo !== 'empty' && estadoNovo !== 'hidden')) {
+        if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
+          somHit.currentTime = 0;
+          somHit.play().catch(e => console.log("Erro no áudio:", e));
+        } else if (estadoNovo.includes('water') || estadoNovo.includes('miss')) {
+          somMiss.currentTime = 0;
+          somMiss.play().catch(e => console.log("Erro no áudio:", e));
+        } else {
+          console.log(`⚠️ ATENÇÃO: Palavra desconhecida: ${estadoNovo}. O som não sabe o que tocar!`);
+        }
+      }
+    }
+
+    prevOpponentBoard.current = current;
+  }, [opponentBoard, gameState]);
+
+  // Efeitos sonoros - ataque da IA
+  useEffect(() => {
+    if (!gameState || gameState.state !== 'playing') {
+      prevPlayerBoard.current = playerBoard;
+      return;
+    }
+
+    const prev = prevPlayerBoard.current;
+    const current = playerBoard;
+
+    const changedIndex = current.findIndex((cell, i) => prev[i] !== cell);
+
+    if (changedIndex !== -1) {
+      const estadoAntigo = prev[changedIndex];
+      const estadoNovo = current[changedIndex];
+      
+      console.log(`MUDANÇA DETECTADA! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
+
+      if (estadoNovo !== 'ship' && estadoNovo !== 'empty') {
+        console.log("É UM ATAQUE DA IA, Ligando animação e som...");
+        
+        if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
+            somHit.currentTime = 0;
+            somHit.play().catch(e => console.log("Erro no áudio:", e));
+        } else if (estadoNovo.includes('water') || estadoNovo.includes('miss')) {
+            somMiss.currentTime = 0;
+            somMiss.play().catch(e => console.log("Erro no áudio:", e));
+        }
+        
+        setAiAnimatingIndex(changedIndex);
+        setTimeout(() => {
+          setAiAnimatingIndex(null);
+        }, 500);
+      }
+    }
+
+    prevPlayerBoard.current = current;
+  }, [playerBoard, gameState]);
 
   const handleMoveShip = async (direction) => {
     if (!selectedMoveShip) {
@@ -124,16 +246,35 @@ export default function Game() {
     <div className="game-layout">
       <Header />
       <main className="game-content">
-        <div className="game-timer">
-          Tempo de Batalha: <span>{formatTime(timeElapsed)}</span>
-        </div>
+        <div className="game-timer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+          <div>Tempo de Batalha: <span>{formatTime(timeElapsed)}</span></div>
 
+          <button 
+            className="drawn-btn" 
+            onClick={() => setIsMuted(!isMuted)}
+            style={{ 
+              padding: '0px 0px', 
+              fontSize: '20px',
+              border: 'none',
+              outline: 'none',
+              boxShadow: 'none',
+              background: 'transparent',
+              cursor: 'pointer'
+            }}
+          >
+            {isMuted ? '🔇' : '🔊'}
+          </button>
+        </div>
         <div className="boards-container">
           <section className="board-section">
             <div className="section-header">
                <h1>Sua Frota {gameState.gameMode === 'campanha' && `- Fase ${campaignStage}`}</h1>
             </div>
-            <Board isOpponent={false} cells={playerBoard} />
+            <Board 
+               isOpponent={false} 
+               cells={playerBoard} 
+               animatingIndex={aiAnimatingIndex} 
+            />
             
             {gameState.gameMode === 'dinamico' && (
               <div className="drawn-card dynamic-panel" style={{marginTop: '20px'}}>
@@ -160,7 +301,12 @@ export default function Game() {
             <div className="section-header">
                <h1>Águas Inimigas</h1>
             </div>
-            <Board isOpponent={true} cells={opponentBoard} onCellClick={handlePlayerAttack} />
+            <Board 
+               isOpponent={true} 
+               cells={opponentBoard} 
+               onCellClick={handlePlayerAttack} 
+               animatingIndex={animatingIndex} 
+            />
           </section>
         </div>
 
@@ -200,7 +346,6 @@ export default function Game() {
         </div>
       )}
 
-      {/* --- FOOTER DOS NAVIOS RESTAURADO --- */}
       <footer className="game-footer">
          <div className="cheatsheet">
            <div className="cheatsheet-title">Navios</div>

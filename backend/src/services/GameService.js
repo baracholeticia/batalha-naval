@@ -41,25 +41,25 @@ export default class GameService {
         return game.getPublicState();
     }
 
-    processAttack(gameId, row, col) {
+    // 1. Não se esqueça de adicionar o 'async' antes do nome da função!
+    async processAttack(gameId, row, col) {
         const game = this.activeGames.get(gameId);
         if (!game) throw new Error("Partida não encontrada!");
 
-        // 1. O Humano faz o ataque
         const humanResult = game.attack(row, col);
 
-        // 2. Se for contra a IA, ela joga logo em seguida caso o humano tenha errado
         if (game.mode === 'IA' && game.state === 'playing') {
             const campaign = this.campaignManagers.get(gameId);
             if (campaign) {
-                // 🛠️ CORREÇÃO AQUI: A IA joga em loop enquanto for a vez dela (se ela acertar, ela atira de novo!)
                 while (game.state === 'playing' && game.getCurrentPlayer().type === 'computer') {
+
+                    await new Promise(resolve => setTimeout(resolve, 1000)); 
+                    
                     campaign.playComputerTurn(); 
                 }
             }
         }
 
-        // 3. Verifica se a partida acabou após os tiros
         if (game.state === 'game_over') {
             this._lidarComFimDeJogo(game);
         } 

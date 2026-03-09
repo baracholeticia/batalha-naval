@@ -29,7 +29,7 @@ export default class GameController {
         }
     }
 
-    static attack(req, res) {
+    static async attack(req, res) {
         try {
             const { id } = req.params;
             const { row, col } = req.body; 
@@ -37,9 +37,7 @@ export default class GameController {
             if (row === undefined || col === undefined) {
                 return res.status(400).json({ error: "Linha (row) e Coluna (col) são obrigatórios." });
             }
-
-            const result = gameService.processAttack(id, row, col);
-
+            const result = await gameService.processAttack(id, row, col); 
             return res.status(200).json(result);
         } catch (error) {
             return res.status(400).json({ error: error.message });

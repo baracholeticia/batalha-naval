@@ -1,7 +1,7 @@
 import Ship from './Ship';
 import './Cell.css';
 
-export default function Cell({ state = 'empty', onClick }) {
+export default function Cell({ state = 'empty', onClick, isAnimating }) {
 
   const [type, part] = state.split('-');
   
@@ -18,6 +18,7 @@ export default function Cell({ state = 'empty', onClick }) {
   return (
     <div className={`cell ${cssClass}`} onClick={onClick}>
       {isShip && <Ship part={displayPart} status={shipStatus} />}
+      {isAnimating && <div className="explosion-effect"></div>}
     </div>
   );
 }
