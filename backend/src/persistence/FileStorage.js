@@ -1,10 +1,19 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 export default class FileStorage {
   constructor(filePath) {
-    this.filePath = path.resolve(filePath);
+    this.filePath = path.join(__dirname, '..', 'data', 'players.json');
 
+    const dir = path.dirname(this.filePath);
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
     // Garante que o arquivo exista
     if (!fs.existsSync(this.filePath)) {
       fs.writeFileSync(this.filePath, JSON.stringify([], null, 2));

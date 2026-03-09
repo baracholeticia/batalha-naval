@@ -14,20 +14,6 @@
     "medalhas": []
   },
   {
-    "id": "1773028556495",
-    "login": "linda",
-    "nome": "linda",
-    "senha": "09876",
-    "estatisticas": {
-      "partidas": 0,
-      "vitorias": 0,
-      "derrotas": 0,
-      "taxaVitoria": 0,
-      "taxaDerrota": 0
-    },
-    "medalhas": []
-  },
-  {
     "id": "1773073710929",
     "login": "mathleal",
     "nome": "matheus",
@@ -54,5 +40,215 @@
       "taxaDerrota": 0
     },
     "medalhas": []
+  },
+  {
+    "id": "1773080000001",
+    "login": "joaosilva",
+    "nome": "João",
+    "senha": "senha123",
+    "estatisticas": {
+      "partidas": 10,
+      "vitorias": 6,
+      "derrotas": 4,
+      "taxaVitoria": 0.6,
+      "taxaDerrota": 0.4
+    },
+    "medalhas": ["Marinheiro", "Capitão"]
+  },
+  {
+    "id": "1773080000002",
+    "login": "mariaclara",
+    "nome": "Maria",
+    "senha": "maria123",
+    "estatisticas": {
+      "partidas": 20,
+      "vitorias": 15,
+      "derrotas": 5,
+      "taxaVitoria": 0.75,
+      "taxaDerrota": 0.25
+    },
+    "medalhas": ["Marinheiro", "Capitão", "Capitão de Mar e Guerra"]
+  },
+  {
+    "id": "1773080000003",
+    "login": "pedro99",
+    "nome": "Pedro",
+    "senha": "pedro",
+    "estatisticas": {
+      "partidas": 0,
+      "vitorias": 0,
+      "derrotas": 0,
+      "taxaVitoria": 0,
+      "taxaDerrota": 0
+    },
+    "medalhas": []
+  },
+  {
+    "id": "1773080000004",
+    "login": "anabeatriz",
+    "nome": "Ana",
+    "senha": "ana",
+    "estatisticas": {
+      "partidas": 8,
+      "vitorias": 4,
+      "derrotas": 4,
+      "taxaVitoria": 0.5,
+      "taxaDerrota": 0.5
+    },
+    "medalhas": ["Marinheiro"]
+  },
+  {
+    "id": "1773080000005",
+    "login": "carlos.edu",
+    "nome": "Carlos",
+    "senha": "edu",
+    "estatisticas": {
+      "partidas": 50,
+      "vitorias": 20,
+      "derrotas": 30,
+      "taxaVitoria": 0.4,
+      "taxaDerrota": 0.6
+    },
+    "medalhas": ["Marinheiro", "Capitão"]
+  },
+  {
+    "id": "1773080000006",
+    "login": "lucas_gamer",
+    "nome": "Lucas",
+    "senha": "lucas",
+    "estatisticas": {
+      "partidas": 100,
+      "vitorias": 90,
+      "derrotas": 10,
+      "taxaVitoria": 0.9,
+      "taxaDerrota": 0.1
+    },
+    "medalhas": ["Marinheiro", "Capitão", "Capitão de Mar e Guerra", "Almirante"]
+  },
+  {
+    "id": "1773080000007",
+    "login": "juliacf",
+    "nome": "Julia",
+    "senha": "julia",
+    "estatisticas": {
+      "partidas": 2,
+      "vitorias": 0,
+      "derrotas": 2,
+      "taxaVitoria": 0.0,
+      "taxaDerrota": 1.0
+    },
+    "medalhas": []
+  },
+  {
+    "id": "1773080000008",
+    "login": "rafasouza",
+    "nome": "Rafael",
+    "senha": "rafael",
+    "estatisticas": {
+      "partidas": 12,
+      "vitorias": 9,
+      "derrotas": 3,
+      "taxaVitoria": 0.75,
+      "taxaDerrota": 0.25
+    },
+    "medalhas": ["Marinheiro", "Capitão"]
+  },
+  {
+    "id": "1773080000009",
+    "login": "fernanda_m",
+    "nome": "Fernanda",
+    "senha": "fernanda",
+    "estatisticas": {
+      "partidas": 5,
+      "vitorias": 5,
+      "derrotas": 0,
+      "taxaVitoria": 1.0,
+      "taxaDerrota": 0.0
+    },
+    "medalhas": ["Marinheiro", "Almirante"]
+  },
+  {
+    "id": "1773080000010",
+    "login": "thiagoh",
+    "nome": "Thiago",
+    "senha": "thiago",
+    "estatisticas": {
+      "partidas": 1,
+      "vitorias": 0,
+      "derrotas": 1,
+      "taxaVitoria": 0.0,
+      "taxaDerrota": 1.0
+    },
+    "medalhas": []
+  },
+  {
+    "id": "1773080000011",
+    "login": "brunacosta",
+    "nome": "Bruna",
+    "senha": "bruna",
+    "estatisticas": {
+      "partidas": 15,
+      "vitorias": 9,
+      "derrotas": 6,
+      "taxaVitoria": 0.6,
+      "taxaDerrota": 0.4
+    },
+    "medalhas": ["Marinheiro", "Capitão"]
+  },
+  {
+    "id": "1773080000012",
+    "login": "roberto.dev",
+    "nome": "Roberto",
+    "senha": "roberto",
+    "estatisticas": {
+      "partidas": 0,
+      "vitorias": 0,
+      "derrotas": 0,
+      "taxaVitoria": 0,
+      "taxaDerrota": 0
+    },
+    "medalhas": []
+  },
+  {
+    "id": "1773080000013",
+    "login": "aline_v",
+    "nome": "Aline",
+    "senha": "aline",
+    "estatisticas": {
+      "partidas": 25,
+      "vitorias": 10,
+      "derrotas": 15,
+      "taxaVitoria": 0.4,
+      "taxaDerrota": 0.6
+    },
+    "medalhas": ["Marinheiro", "Capitão"]
+  },
+  {
+    "id": "1773080000014",
+    "login": "gustavo88",
+    "nome": "Gustavo",
+    "senha": "gustavo",
+    "estatisticas": {
+      "partidas": 4,
+      "vitorias": 1,
+      "derrotas": 3,
+      "taxaVitoria": 0.25,
+      "taxaDerrota": 0.75
+    },
+    "medalhas": ["Marinheiro"]
+  },
+  {
+    "id": "1773080000015",
+    "login": "leticiacampos",
+    "nome": "Leticia",
+    "senha": "leticia",
+    "estatisticas": {
+      "partidas": 10,
+      "vitorias": 5,
+      "derrotas": 5,
+      "taxaVitoria": 0.5,
+      "taxaDerrota": 0.5
+    },
+    "medalhas": ["Marinheiro", "Capitão"]
   }
 ]
