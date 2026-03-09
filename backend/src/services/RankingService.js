@@ -6,18 +6,27 @@ export default class RankingService {
   gerarRanking() {
     const players = this.playerRepo.getAll();
 
-    return players
-      .sort((a, b) => {
-        if (b.estatisticas.taxaVitoria !== a.estatisticas.taxaVitoria) {
-          return b.estatisticas.taxaVitoria - a.estatisticas.taxaVitoria;
-        }
-        return b.estatisticas.vitorias - a.estatisticas.vitorias;
-      })
-      .map((p, index) => ({
-        posicao: index + 1,
+    const ranking = players.map(p => {
+      return {
+        login: p.login,
         nome: p.nome,
         vitorias: p.estatisticas.vitorias,
+        partidas: p.estatisticas.partidas,
         taxaVitoria: p.estatisticas.taxaVitoria
-      }));
+      };
+    });
+
+    ranking.sort((a, b) => {
+      if (b.vitorias !== a.vitorias) {
+        return b.vitorias - a.vitorias; 
+      }
+      return b.taxaVitoria - a.taxaVitoria;
+    });
+
+    ranking.forEach((jogador, index) => {
+        jogador.posicao = index + 1;
+    });
+
+    return ranking;
   }
 }
