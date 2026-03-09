@@ -21,7 +21,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
-        {/*rotas Protegidas*/}
+        {/*rotas protegidas*/}
         <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
         <Route path="/ranking" element={<PrivateRoute><Ranking /></PrivateRoute>} />

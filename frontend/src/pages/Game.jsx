@@ -11,7 +11,6 @@ import soundtrackAudio from '../assets/soundtrack.mp3';
 import mute from '../assets/volume-mute.png';
 import volume from '../assets/volume.png';
 
-// Efeitos sonoros rápidos podem continuar no escopo global sem problemas
 const somHit = new Audio(hitAudio);
 const somMiss = new Audio(missAudio);
 somHit.volume = 0.5; 
@@ -65,7 +64,7 @@ export default function Game() {
     }
   };
 
-  // Cronômetro de Partida
+  //cronometro
   useEffect(() => {
     let interval;
     if (gameState?.state === 'playing') {
@@ -80,7 +79,7 @@ export default function Game() {
     return `${m}:${s}`;
   };
 
-  // Polling do Backend
+  //polling do back
   const fetchGameState = async () => {
     if (!gameId) return;
     try {
@@ -112,6 +111,12 @@ export default function Game() {
   const handlePlayerAttack = async (idx) => {
     startMusic();
     if (!isMyTurn || gameState?.state !== 'playing') return;
+
+    if (opponentBoard[idx] !== 'empty' && opponentBoard[idx] !== 'hidden') {
+      console.warn("posição já bombardeada.");
+      return; 
+    }
+
     setAnimatingIndex(idx);
     const row = Math.floor(idx / 10);
     const col = idx % 10;
@@ -134,7 +139,7 @@ export default function Game() {
     }
   };
 
-  // Efeitos sonoros - ataque do Jogador
+  //efeito sonoro player
   useEffect(() => {
     if (!gameState || gameState.state !== 'playing') {
       prevOpponentBoard.current = opponentBoard;
@@ -150,7 +155,6 @@ export default function Game() {
       const estadoAntigo = prev[changedIndex];
       const estadoNovo = current[changedIndex];
       
-      console.log(`TABULEIRO INIMIGO MUDOU! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
 
       if (estadoAntigo !== 'empty' || (estadoNovo !== 'empty' && estadoNovo !== 'hidden')) {
         if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
@@ -159,8 +163,6 @@ export default function Game() {
         } else if (estadoNovo.includes('water') || estadoNovo.includes('miss')) {
           somMiss.currentTime = 0;
           somMiss.play().catch(e => console.log("Erro no áudio:", e));
-        } else {
-          console.log(`${estadoNovo}. O som não sabe o que tocar!`);
         }
       }
     }
@@ -168,7 +170,7 @@ export default function Game() {
     prevOpponentBoard.current = current;
   }, [opponentBoard, gameState]);
 
-  // Efeitos sonoros - ataque da IA
+  //efeito sonoro ia
   useEffect(() => {
     if (!gameState || gameState.state !== 'playing') {
       prevPlayerBoard.current = playerBoard;
@@ -181,13 +183,9 @@ export default function Game() {
     const changedIndex = current.findIndex((cell, i) => prev[i] !== cell);
 
     if (changedIndex !== -1) {
-      const estadoAntigo = prev[changedIndex];
       const estadoNovo = current[changedIndex];
-      
-      console.log(`MUDANÇA DETECTADA! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
 
       if (estadoNovo !== 'ship' && estadoNovo !== 'empty') {
-        console.log("É UM ATAQUE DA IA, Ligando animação e som...");
         
         if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
             somHit.currentTime = 0;
@@ -290,7 +288,6 @@ export default function Game() {
   const didIWin = enemyData?.ships.every(s => s.sunk);
   const gameStatus = gameState.state === 'game_over' ? (didIWin ? 'won' : 'lost') : 'playing';
 
-  // Usa o tabuleiro com o navio verde em vez do tabuleiro normal
   const finalPlayerBoard = getHighlightedPlayerBoard();
 
   return (
@@ -321,7 +318,6 @@ export default function Game() {
             <div className="section-header">
                <h1>Sua Frota {gameState.gameMode === 'campanha' && `- Fase ${campaignStage}`}</h1>
             </div>
-            {/* O SEU COMPONENTE BOARD FOI ATUALIZADO AQUI 👇 */}
             <Board 
                isOpponent={false} 
                cells={finalPlayerBoard} 

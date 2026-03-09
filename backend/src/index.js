@@ -1,26 +1,22 @@
 import express from 'express';
 import cors from 'cors';
 
-// 1. IMPORTANDO SUAS CLASSES
 import FileStorage from './persistence/FileStorage.js';
 import PlayerRepository from './persistence/PlayerRepository.js';
 import GameService from './services/GameService.js';
 import RankingService from './services/RankingService.js';
 import RewardService from './services/RewardService.js';
 
-// 2. INICIALIZANDO OS SERVIÇOS
 const storage = new FileStorage('./src/data/players.json');
 const playerRepo = new PlayerRepository(storage);
 const gameService = new GameService(playerRepo);
 const rankingService = new RankingService(playerRepo);
 const rewardService = new RewardService(playerRepo);
 
-// 3. CONFIGURANDO O SERVIDOR EXPRESS
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- ROTAS DE AUTENTICAÇÃO E PERFIL ---
 app.post('/api/register', (req, res) => {
     const { nome, login, senha } = req.body;
     try {
@@ -41,7 +37,6 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-// 🛠️ A ROTA DE EDITAR PERFIL QUE ESTAVA FALTANDO AQUI!
 app.put('/api/profile', (req, res) => {
     const { currentLogin, novoNome, novoLogin, novaSenha } = req.body;
     try {
@@ -80,7 +75,7 @@ app.get('/api/user/:login', (req, res) => {
 });
 
 
-// --- ROTAS DE JOGO ---
+//rotas de jogo
 app.post('/api/game/start', (req, res) => {
     const { mode, gameMode, aiLevel, loginPlayer1, ships } = req.body;
     try {
@@ -143,6 +138,5 @@ app.get('/api/ranking', (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-// 4. LIGANDO O SERVIDOR 
+ 
 app.listen(3000);

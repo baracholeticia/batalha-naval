@@ -33,7 +33,7 @@ export default function EditProfile() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          currentLogin: loggedUser.login, // O Backend precisa do login antigo para achar no banco
+          currentLogin: loggedUser.login,
           novoNome: name,
           novoLogin: username,
           novaSenha: password

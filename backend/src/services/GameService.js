@@ -41,7 +41,6 @@ export default class GameService {
         return game.getPublicState();
     }
 
-    // 1. Não se esqueça de adicionar o 'async' antes do nome da função!
     async processAttack(gameId, row, col) {
         const game = this.activeGames.get(gameId);
         if (!game) throw new Error("Partida não encontrada!");
@@ -71,7 +70,6 @@ export default class GameService {
     }
 
     _lidarComFimDeJogo(game) {
-      // Trava de segurança: Garante que só vai salvar a vitória UMA vez por partida
       if (game.gameOverProcessed) return;
       game.gameOverProcessed = true;
 
@@ -81,8 +79,6 @@ export default class GameService {
       const loginVencedor = vencedorIndex === 0 ? game.loginPlayer1 : game.loginPlayer2;
       const loginPerdedor = perdedorIndex === 0 ? game.loginPlayer1 : game.loginPlayer2;
 
-      console.log(`\n🏆 FIM DE JOGO! Vencedor: ${loginVencedor} | Perdedor: ${loginPerdedor}`);
-
       this.finalizarPartida(loginVencedor, loginPerdedor);
   }
 
@@ -90,22 +86,18 @@ export default class GameService {
       const vencedor = this.playerRepo.findByLogin(loginVencedor);
       const perdedor = this.playerRepo.findByLogin(loginPerdedor);
 
-      // Salva a vitória se o vencedor for um humano cadastrado
       if (vencedor) {
           vencedor.estatisticas.partidas++;
           vencedor.estatisticas.vitorias++;
           this._calcularTaxas(vencedor);
           this.playerRepo.update(vencedor);
-          console.log(`📈 Estatísticas salvas com sucesso para: ${vencedor.login}`);
       }
 
-      // Salva a derrota se o perdedor for um humano cadastrado
       if (perdedor) {
           perdedor.estatisticas.partidas++;
           perdedor.estatisticas.derrotas++;
           this._calcularTaxas(perdedor);
           this.playerRepo.update(perdedor);
-          console.log(`📉 Estatísticas de derrota salvas para: ${perdedor.login}`);
       }
   }
 

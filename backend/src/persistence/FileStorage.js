@@ -14,7 +14,6 @@ export default class FileStorage {
       fs.mkdirSync(dir, { recursive: true });
     }
     
-    // Garante que o arquivo exista
     if (!fs.existsSync(this.filePath)) {
       fs.writeFileSync(this.filePath, JSON.stringify([], null, 2));
     }

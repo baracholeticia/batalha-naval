@@ -4,7 +4,7 @@ export default class BaseAI extends Player {
     constructor(id, name, difficulty) {
         super(id, name, 'computer');
         this.difficulty = difficulty;
-        this.lastHits = []; // Memória para focar os ataques
+        this.lastHits = []; //memória para focar os ataques
     }
 
     //cada ia vai implementar o seu

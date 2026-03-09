@@ -58,7 +58,7 @@ export default function Login() {
               <input 
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Digite sua senha" 
-                value={password} // Conectando ao estado
+                value={password} 
                 onChange={(e) => setPassword(e.target.value)}
                 required 
                 style={{ width: '100%', paddingRight: '40px' }} 

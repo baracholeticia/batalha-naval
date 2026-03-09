@@ -52,18 +52,12 @@ export default class CampaignManager {
             }
         });
 
-        // -----------------------------------------------------------
-        // 🛠️ A CORREÇÃO ESTÁ AQUI: 
-        // A Engine cria tabuleiros vazios quando nasce. 
-        // Nós pegamos esses tabuleiros e entregamos para o Humano e para a IA!
-        // -----------------------------------------------------------
         this.humanPlayer.setBoard(this.activeGame.players[0].board);
         this.currentAI.setBoard(this.activeGame.players[1].board);
 
         this.activeGame.players[0] = this.humanPlayer;
         this.activeGame.players[1] = this.currentAI;
 
-        // Agora a IA tem um tabuleiro e pode posicionar os navios sem dar erro
         this._autoPlaceAIShips();
 
         return {
