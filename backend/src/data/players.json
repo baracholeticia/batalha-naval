@@ -5,11 +5,11 @@
     "nome": "leticia",
     "senha": "1234",
     "estatisticas": {
-      "partidas": 2,
-      "vitorias": 0,
-      "derrotas": 2,
-      "taxaVitoria": 0,
-      "taxaDerrota": 1
+      "partidas": 5,
+      "vitorias": 2,
+      "derrotas": 3,
+      "taxaVitoria": 0.4,
+      "taxaDerrota": 0.6
     },
     "medalhas": []
   },

@@ -64,7 +64,7 @@ export default function Home() {
             <section className="profile-section">
                 
                 <header className="welcome-header">
-                <h1 className="welcome-title">Bem-vinda, <span>{playerName}</span>! 👋</h1>
+                <h1 className="welcome-title">Bem-vindo, <span>{playerName}</span>!</h1>
                 </header>
 
                 <div className="drawn-card stats-card">
@@ -84,7 +84,7 @@ export default function Home() {
                     </div>
                 </div>
                 <button className="drawn-btn yellow-btn full-width" onClick={() => navigate('/ranking')}>
-                    🏆 Ver Ranking Global
+                    Ver Ranking Global
                 </button>
                 </div>
 

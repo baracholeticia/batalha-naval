@@ -127,7 +127,7 @@ export default function Placement() {
                   >
                     <span></span> Rotação: {isHorizontal ? 'Horizontal' : 'Vertical'}
                   </button>
-                  <button className="drawn-btn white-btn action-btn" onClick={handleRandomize}>
+                  <button className="drawn-btn yellow-btn action-btn" onClick={handleRandomize}>
                     <span></span> Distribuição Aleatória
                   </button>
                   <button className="drawn-btn red-btn action-btn" onClick={handleClear}>

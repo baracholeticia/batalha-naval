@@ -4,9 +4,12 @@ import Header from '../components/Header';
 import Board from '../components/Board';
 import { mapBackendToFrontendBoard } from '../utils/BoardMapper';
 import './Game.css';
+import '../components/Ship.css';
 import hitAudio from '../assets/hit.mp3';
 import missAudio from '../assets/miss.mp3';
 import soundtrackAudio from '../assets/soundtrack.mp3';
+import mute from '../assets/volume-mute.png';
+import volume from '../assets/volume.png';
 
 // Efeitos sonoros rápidos podem continuar no escopo global sem problemas
 const somHit = new Audio(hitAudio);
@@ -17,7 +20,6 @@ somMiss.volume = 0.5;
 export default function Game() {
   const navigate = useNavigate();
   const gameId = localStorage.getItem('currentGameId');
-  const loggedUser = JSON.parse(localStorage.getItem('loggedUser') || '{}');
 
   const prevOpponentBoard = useRef(Array(100).fill('empty'));
   const [gameState, setGameState] = useState(null);
@@ -29,7 +31,8 @@ export default function Game() {
   const prevPlayerBoard = useRef(Array(100).fill('empty'));
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [selectedMoveShip, setSelectedMoveShip] = useState('');
-  const [campaignStage, setCampaignStage] = useState(() => {
+  
+  const [campaignStage] = useState(() => {
     return parseInt(localStorage.getItem('campaignStage')) || 1;
   });
   
@@ -42,7 +45,6 @@ export default function Game() {
     trilhaSonoraRef.current.loop = true;
     trilhaSonoraRef.current.volume = 0.1;
 
-    // 
     return () => {
       if (trilhaSonoraRef.current) {
         trilhaSonoraRef.current.pause();
@@ -51,7 +53,6 @@ export default function Game() {
     };
   }, []); 
 
-  
   useEffect(() => {
     if (trilhaSonoraRef.current) {
       trilhaSonoraRef.current.muted = isMuted;
@@ -60,7 +61,7 @@ export default function Game() {
 
   const startMusic = () => {
     if (trilhaSonoraRef.current && trilhaSonoraRef.current.paused) {
-      trilhaSonoraRef.current.play().catch(err => console.log("Aguardando interação..."));
+      trilhaSonoraRef.current.play().catch(() => console.log("Aguardando interação..."));
     }
   };
 
@@ -128,6 +129,7 @@ export default function Game() {
       }, 500); 
 
     } catch (error) {
+      console.error(error);
       alert("Erro ao atacar!");
     }
   };
@@ -148,7 +150,7 @@ export default function Game() {
       const estadoAntigo = prev[changedIndex];
       const estadoNovo = current[changedIndex];
       
-      console.log(`🎯 TABULEIRO INIMIGO MUDOU! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
+      console.log(`TABULEIRO INIMIGO MUDOU! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
 
       if (estadoAntigo !== 'empty' || (estadoNovo !== 'empty' && estadoNovo !== 'hidden')) {
         if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
@@ -158,7 +160,7 @@ export default function Game() {
           somMiss.currentTime = 0;
           somMiss.play().catch(e => console.log("Erro no áudio:", e));
         } else {
-          console.log(`⚠️ ATENÇÃO: Palavra desconhecida: ${estadoNovo}. O som não sabe o que tocar!`);
+          console.log(`${estadoNovo}. O som não sabe o que tocar!`);
         }
       }
     }
@@ -219,6 +221,8 @@ export default function Game() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Movimento inválido");
         fetchGameState();
+
+        setSelectedMoveShip('');
     } catch (error) {
         alert(error.message);
     }
@@ -227,6 +231,50 @@ export default function Game() {
   const handleNextCampaignStage = () => {
     localStorage.setItem('campaignStage', campaignStage + 1);
     navigate('/placement/campanha'); 
+  };
+
+  const handleMyBoardClick = (idx) => {
+    if (gameState?.gameMode !== 'dinamico') return;
+    
+    const row = Math.floor(idx / 10);
+    const col = idx % 10;
+
+    const clickedShip = myData?.ships.find(ship => {
+      for (let i = 0; i < ship.size; i++) {
+          let sr = ship.row;
+          let sc = ship.col;
+          if (ship.orientation === 'horizontal') sc += i;
+          else sr += i;
+          
+          if (sr === row && sc === col) return true;
+      }
+      return false;
+    });
+
+    if (clickedShip && !clickedShip.sunk) {
+        setSelectedMoveShip(clickedShip.id);
+    }
+  };
+
+  const getHighlightedPlayerBoard = () => {
+    const boardCopy = [...playerBoard];
+    if (!selectedMoveShip || !myData?.ships) return boardCopy;
+
+    const ship = myData.ships.find(s => s.id === selectedMoveShip);
+    if (!ship) return boardCopy;
+
+    for (let i = 0; i < ship.size; i++) {
+        let r = ship.row;
+        let c = ship.col;
+        if (ship.orientation === 'horizontal') c += i;
+        else r += i;
+        
+        const idx = r * 10 + c;
+        if (boardCopy[idx]) {
+           boardCopy[idx] = boardCopy[idx] + ' selected-ship-active';
+        }
+    }
+    return boardCopy;
   };
 
   const handleEndGame = () => {
@@ -241,6 +289,9 @@ export default function Game() {
   const enemyData = gameState.players[1];
   const didIWin = enemyData?.ships.every(s => s.sunk);
   const gameStatus = gameState.state === 'game_over' ? (didIWin ? 'won' : 'lost') : 'playing';
+
+  // Usa o tabuleiro com o navio verde em vez do tabuleiro normal
+  const finalPlayerBoard = getHighlightedPlayerBoard();
 
   return (
     <div className="game-layout">
@@ -262,7 +313,7 @@ export default function Game() {
               cursor: 'pointer'
             }}
           >
-            {isMuted ? '🔇' : '🔊'}
+            {isMuted ? <img src={mute} alt="Mudo"></img> : <img src={volume} alt="Volume"></img>}
           </button>
         </div>
         <div className="boards-container">
@@ -270,15 +321,17 @@ export default function Game() {
             <div className="section-header">
                <h1>Sua Frota {gameState.gameMode === 'campanha' && `- Fase ${campaignStage}`}</h1>
             </div>
+            {/* O SEU COMPONENTE BOARD FOI ATUALIZADO AQUI 👇 */}
             <Board 
                isOpponent={false} 
-               cells={playerBoard} 
+               cells={finalPlayerBoard} 
                animatingIndex={aiAnimatingIndex} 
+               onCellClick={handleMyBoardClick}
             />
             
             {gameState.gameMode === 'dinamico' && (
               <div className="drawn-card dynamic-panel" style={{marginTop: '20px'}}>
-                <h3>🌊 Mover Frota (1 por turno)</h3>
+                <h3>Mover Navio (1 por turno)</h3>
                 <div className="dynamic-controls">
                   <select value={selectedMoveShip} onChange={(e) => setSelectedMoveShip(e.target.value)}>
                     <option value="">Selecione um navio...</option>
@@ -287,10 +340,10 @@ export default function Game() {
                     ))}
                   </select>
                   <div className="dynamic-arrows">
-                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('left')}>⬅️</button>
-                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('up')}>⬆️</button>
-                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('down')}>⬇️</button>
-                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('right')}>➡️</button>
+                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('left')}>⭠</button>
+                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('up')}>⭡</button>
+                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('down')}>⭣</button>
+                    <button className="drawn-btn" disabled={myData?.hasMovedThisTurn || !isMyTurn} onClick={() => handleMoveShip('right')}>⭢</button>
                   </div>
                 </div>
               </div>
@@ -324,7 +377,7 @@ export default function Game() {
               <h1 className="modal-title text-blue">FASE {campaignStage} CONCLUÍDA!</h1>
               <p className="game-over-desc">Prepare-se para reposicionar sua frota contra a próxima IA.</p>
               <button className="drawn-btn yellow-btn game-over-btn" onClick={handleNextCampaignStage}>
-                ⚔️ Reposicionar Frota e Avançar
+                Reposicionar Navios e Avançar
               </button>
             </div>
           ) : (
@@ -336,7 +389,7 @@ export default function Game() {
                 {gameStatus === 'won' ? 'Você afundou todos os navios inimigos!' : 'Seus navios afundaram!'}
               </p>
               <div className="game-over-stats">
-                <span>⏱️ Duração: <strong>{formatTime(timeElapsed)}</strong></span>
+                <span>⏱ Duração: <strong>{formatTime(timeElapsed)}</strong></span>
               </div>
               <button className="drawn-btn white-btn game-over-btn" onClick={handleEndGame}>
                 Voltar ao Menu Principal

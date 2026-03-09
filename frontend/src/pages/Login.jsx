@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
+import hidden from '../assets/hidden.png'
+import visible from '../assets/visible.png'
 
 export default function Login() {
   const navigate = useNavigate();
@@ -76,7 +78,7 @@ export default function Login() {
                 }}
                 title={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
-                {showPassword ? 'x' : 'x'}
+                {showPassword ? <img src={hidden} alt=" " className="hidden" /> : <img src={visible} alt=" " className="visible" />}
               </button>
             </div>
           </div>

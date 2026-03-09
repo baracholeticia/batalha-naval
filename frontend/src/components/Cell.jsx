@@ -3,7 +3,10 @@ import './Cell.css';
 
 export default function Cell({ state = 'empty', onClick, isAnimating }) {
 
-  const [type, part] = state.split('-');
+
+  const [baseState, ...extraClassesArr] = state.split(' ');
+  const extraClasses = extraClassesArr.join(' ');  
+  const [type, part] = baseState.split('-');
   
   const isShip = type === 'myship' || type === 'hit' || type === 'sunk';
 
@@ -16,7 +19,7 @@ export default function Cell({ state = 'empty', onClick, isAnimating }) {
   const cssClass = type === 'oppship' ? 'empty' : type;
 
   return (
-    <div className={`cell ${cssClass}`} onClick={onClick}>
+    <div className={`cell ${cssClass} ${extraClasses}`} onClick={onClick}>
       {isShip && <Ship part={displayPart} status={shipStatus} />}
       {isAnimating && <div className="explosion-effect"></div>}
     </div>
