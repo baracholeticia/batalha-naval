@@ -53,7 +53,7 @@ export default class GameService {
             if (campaign) {
                 while (game.state === 'playing' && game.getCurrentPlayer().type === 'computer') {
 
-                    await new Promise(resolve => setTimeout(resolve, 1500)); 
+                    await new Promise(resolve => setTimeout(resolve, 1000)); 
                     
                     campaign.playComputerTurn(); 
                 }

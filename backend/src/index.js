@@ -9,7 +9,7 @@ import RankingService from './services/RankingService.js';
 import RewardService from './services/RewardService.js';
 
 // 2. INICIALIZANDO OS SERVIÇOS
-const storage = new FileStorage('data/players.json');
+const storage = new FileStorage('./src/data/players.json');
 const playerRepo = new PlayerRepository(storage);
 const gameService = new GameService(playerRepo);
 const rankingService = new RankingService(playerRepo);

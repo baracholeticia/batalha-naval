@@ -1,5 +1,6 @@
 .cell {
   width: 100%;
+  position: relative;
   aspect-ratio: 1 / 1;
   background-color: var(--cell-bg);
   border: 2px solid var(--border-color);
@@ -30,4 +31,21 @@
 .cell.empty:active {
   transform: scale(0.85);
   background-color: #d1d5db;
+}
+
+@keyframes explode {
+  0% { transform: scale(0.2); opacity: 1; background-color: yellow; border-radius: 50%; }
+  50% { transform: scale(1.5); opacity: 0.9; background-color: red; border-radius: 50%; }
+  100% { transform: scale(1); opacity: 0; background-color: darkred; border-radius: 50%; }
+}
+
+.explosion-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation: explode 0.5s ease-out forwards;
+  pointer-events: none; 
+  z-index: 10; 
 }

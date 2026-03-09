@@ -14,6 +14,7 @@ export default function Game() {
   const [playerBoard, setPlayerBoard] = useState(Array(100).fill('empty'));
   const [opponentBoard, setOpponentBoard] = useState(Array(100).fill('empty'));
   const [isMyTurn, setIsMyTurn] = useState(false);
+  const [animatingIndex, setAnimatingIndex] = useState(null);
   
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [selectedMoveShip, setSelectedMoveShip] = useState('');
@@ -68,6 +69,7 @@ export default function Game() {
   // 3. Ações de Combate
   const handlePlayerAttack = async (idx) => {
     if (!isMyTurn || gameState?.state !== 'playing') return;
+    setAnimatingIndex(idx);
     const row = Math.floor(idx / 10);
     const col = idx % 10;
 
@@ -77,7 +79,12 @@ export default function Game() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ row, col })
       });
-      fetchGameState(); 
+      
+      setTimeout(() => {
+          setAnimatingIndex(null); 
+          fetchGameState();       
+      }, 500); 
+
     } catch (error) {
       alert("Erro ao atacar!");
     }
@@ -160,7 +167,13 @@ export default function Game() {
             <div className="section-header">
                <h1>Águas Inimigas</h1>
             </div>
-            <Board isOpponent={true} cells={opponentBoard} onCellClick={handlePlayerAttack} />
+            {}
+            <Board 
+               isOpponent={true} 
+               cells={opponentBoard} 
+               onCellClick={handlePlayerAttack} 
+               animatingIndex={animatingIndex} 
+            />
           </section>
         </div>
 

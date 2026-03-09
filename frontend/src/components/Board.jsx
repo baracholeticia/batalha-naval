@@ -1,7 +1,7 @@
 import Cell from './Cell';
 import './Board.css';
 
-export default function Board({ isOpponent, cells = Array(100).fill('empty'), onCellClick }) {
+export default function Board({ isOpponent, cells = Array(100).fill('empty'), onCellClick, animatingIndex }) {
   const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   
@@ -22,6 +22,7 @@ export default function Board({ isOpponent, cells = Array(100).fill('empty'), on
               key={i} 
               state={state} 
               onClick={() => onCellClick && onCellClick(i)} 
+              isAnimating={animatingIndex === i} 
             />
           ))}
           

@@ -5,7 +5,7 @@
   "description": "Backend da Batalha Naval",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
