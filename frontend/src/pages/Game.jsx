@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Board from '../components/Board';
@@ -8,11 +8,9 @@ import hitAudio from '../assets/hit.mp3';
 import missAudio from '../assets/miss.mp3';
 import soundtrackAudio from '../assets/soundtrack.mp3';
 
+// Efeitos sonoros rápidos podem continuar no escopo global sem problemas
 const somHit = new Audio(hitAudio);
 const somMiss = new Audio(missAudio);
-const trilhaSonora = new Audio(soundtrackAudio);
-trilhaSonora.loop = true;
-trilhaSonora.volume = 0.1; 
 somHit.volume = 0.5; 
 somMiss.volume = 0.5;
 
@@ -34,13 +32,39 @@ export default function Game() {
   const [campaignStage, setCampaignStage] = useState(() => {
     return parseInt(localStorage.getItem('campaignStage')) || 1;
   });
-  const startMusic = () => {
-  if (trilhaSonora.paused) {
-    trilhaSonora.play().catch(err => console.log("Aguardando interação..."));
-  }
-};
+  
+  const [isMuted, setIsMuted] = useState(false);
 
-  // 1. Cronômetro de Partida
+  const trilhaSonoraRef = useRef(null);
+
+  useEffect(() => {
+    trilhaSonoraRef.current = new Audio(soundtrackAudio);
+    trilhaSonoraRef.current.loop = true;
+    trilhaSonoraRef.current.volume = 0.1;
+
+    // 
+    return () => {
+      if (trilhaSonoraRef.current) {
+        trilhaSonoraRef.current.pause();
+        trilhaSonoraRef.current.currentTime = 0;
+      }
+    };
+  }, []); 
+
+  
+  useEffect(() => {
+    if (trilhaSonoraRef.current) {
+      trilhaSonoraRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  const startMusic = () => {
+    if (trilhaSonoraRef.current && trilhaSonoraRef.current.paused) {
+      trilhaSonoraRef.current.play().catch(err => console.log("Aguardando interação..."));
+    }
+  };
+
+  // Cronômetro de Partida
   useEffect(() => {
     let interval;
     if (gameState?.state === 'playing') {
@@ -55,7 +79,7 @@ export default function Game() {
     return `${m}:${s}`;
   };
 
-  // 2. Polling do Backend
+  // Polling do Backend
   const fetchGameState = async () => {
     if (!gameId) return;
     try {
@@ -98,10 +122,8 @@ export default function Game() {
         body: JSON.stringify({ row, col })
       });
       
-      // Tiramos os sons daqui! Agora o React vai vigiar o tabuleiro.
-      
       setTimeout(() => {
-          setAnimatingIndex(null); 
+          setAnimatingIndex(null);       
           fetchGameState();       
       }, 500); 
 
@@ -110,7 +132,7 @@ export default function Game() {
     }
   };
 
-  // efeitos sonoros
+  // Efeitos sonoros - ataque do Jogador
   useEffect(() => {
     if (!gameState || gameState.state !== 'playing') {
       prevOpponentBoard.current = opponentBoard;
@@ -126,31 +148,25 @@ export default function Game() {
       const estadoAntigo = prev[changedIndex];
       const estadoNovo = current[changedIndex];
       
-      // VAMOS VER O QUE ELE ESCREVE AQUI:
       console.log(`🎯 TABULEIRO INIMIGO MUDOU! Index: ${changedIndex} | Antes: ${estadoAntigo} | Agora: ${estadoNovo}`);
 
-      // Se for a primeira vez que o tabuleiro carrega, ignoramos
       if (estadoAntigo !== 'empty' || (estadoNovo !== 'empty' && estadoNovo !== 'hidden')) {
-          
-          // Se a palavra contiver "hit" ou "sunk", é explosão na certa!
-      if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
+        if (estadoNovo.includes('hit') || estadoNovo.includes('sunk')) {
           somHit.currentTime = 0;
           somHit.play().catch(e => console.log("Erro no áudio:", e));
-          
-      // Se contiver "water" ou "miss", é água!
-      } else if (estadoNovo.includes('water') || estadoNovo.includes('miss')) {
+        } else if (estadoNovo.includes('water') || estadoNovo.includes('miss')) {
           somMiss.currentTime = 0;
           somMiss.play().catch(e => console.log("Erro no áudio:", e));
-      
-          } else {
-              console.log(`⚠️ ATENÇÃO: Palavra desconhecida: ${estadoNovo}. O som não sabe o que tocar!`);
-          }
+        } else {
+          console.log(`⚠️ ATENÇÃO: Palavra desconhecida: ${estadoNovo}. O som não sabe o que tocar!`);
+        }
       }
     }
 
     prevOpponentBoard.current = current;
   }, [opponentBoard, gameState]);
 
+  // Efeitos sonoros - ataque da IA
   useEffect(() => {
     if (!gameState || gameState.state !== 'playing') {
       prevPlayerBoard.current = playerBoard;
@@ -230,10 +246,25 @@ export default function Game() {
     <div className="game-layout">
       <Header />
       <main className="game-content">
-        <div className="game-timer">
-          Tempo de Batalha: <span>{formatTime(timeElapsed)}</span>
-        </div>
+        <div className="game-timer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+          <div>Tempo de Batalha: <span>{formatTime(timeElapsed)}</span></div>
 
+          <button 
+            className="drawn-btn" 
+            onClick={() => setIsMuted(!isMuted)}
+            style={{ 
+              padding: '0px 0px', 
+              fontSize: '20px',
+              border: 'none',
+              outline: 'none',
+              boxShadow: 'none',
+              background: 'transparent',
+              cursor: 'pointer'
+            }}
+          >
+            {isMuted ? '🔇' : '🔊'}
+          </button>
+        </div>
         <div className="boards-container">
           <section className="board-section">
             <div className="section-header">
@@ -270,7 +301,6 @@ export default function Game() {
             <div className="section-header">
                <h1>Águas Inimigas</h1>
             </div>
-            {}
             <Board 
                isOpponent={true} 
                cells={opponentBoard} 
@@ -316,7 +346,6 @@ export default function Game() {
         </div>
       )}
 
-      {/* --- FOOTER DOS NAVIOS RESTAURADO --- */}
       <footer className="game-footer">
          <div className="cheatsheet">
            <div className="cheatsheet-title">Navios</div>
