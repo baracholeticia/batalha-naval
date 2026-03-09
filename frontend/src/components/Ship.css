@@ -1,8 +1,17 @@
-.ship-capsule {
-  background-color: #b6b5b581;
-  border-radius: 20px;
-  margin: 4px;
-  z-index: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
+.ship-shape {
+    width: 80%;
+    height: 80%;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
+
+.ship-shape.intact { background-color: #111111; } /*navio não acertado*/
+.ship-shape.hit { background-color: #ffb703; }    /*navio acertado*/
+.ship-shape.sunk { background-color: #ff4d4d; }   /*navio afundado*/
+
+.ship-shape.left { border-radius: 50% 4px 4px 50%; width: 90%; margin-left: 10%; }
+.ship-shape.right { border-radius: 4px 50% 50% 4px; width: 90%; margin-right: 10%; }
+.ship-shape.top { border-radius: 50% 50% 4px 4px; height: 90%; margin-top: 10%; }
+.ship-shape.bottom { border-radius: 4px 4px 50% 50%; height: 90%; margin-bottom: 10%; }
+.ship-shape.single { border-radius: 50%; }
+.ship-shape.body { width: 80%; height: 80%; }

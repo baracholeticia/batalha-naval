@@ -1,38 +1,52 @@
+/* src/components/Board.css */
 .board-wrapper {
-  display: grid;
-  grid-template-columns: 30px auto; /* 30px para os números, resto para o tabuleiro */
-  grid-template-rows: 30px auto;    /* 30px para as letras, resto para o tabuleiro */
-  gap: 10px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 3px solid var(--border-color);
+  display: inline-flex;
+  flex-direction: column;
 }
 
-.coords-letters {
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: repeat(10, 40px); /* Mesma largura das células */
-  align-items: center;
-  justify-items: center;
+.blue-theme { background-color: var(--board-blue); }
+.red-theme { background-color: var(--board-red); }
+
+.board-header {
+  display: flex;
+  margin-bottom: 8px;
 }
 
-.coords-numbers {
-  grid-column: 1;
-  grid-row: 2;
-  display: grid;
-  grid-template-rows: repeat(10, 40px); /* Mesma altura das células */
-  align-items: center;
-  justify-items: center;
+.corner-empty {
+  width: 24px; /* Espaço para alinhar com a barra lateral de letras */
+  margin-right: 8px;
+}
+
+.board-body {
+  display: flex;
+}
+
+.board-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  margin-right: 8px;
 }
 
 .coord-label {
-  font-family: 'Inter', sans-serif; /* Ou outra fonte sans-serif limpa */
-  font-weight: 700;
-  color: #9ca3af; /* Cinza claro do design */
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Para alinhar com as células no header */
 }
 
 .board-grid {
-    display: grid;
-    grid-template-columns: repeat(10, 40px);
-    grid-template-rows: repeat(10, 40px);
-    border: 2px solid #ffffff;
-    background-color: #c6e4ff;
+  display: grid;
+  grid-template-columns: repeat(10, 32px);
+  grid-template-rows: repeat(10, 32px);
+  gap: 4px;
+  background-color: var(--border-color); /* Cria as linhas entre as células */
+  padding: 4px;
+  border-radius: 8px;
 }
