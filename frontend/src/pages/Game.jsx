@@ -6,10 +6,13 @@ import { mapBackendToFrontendBoard } from '../utils/BoardMapper';
 import './Game.css';
 import hitAudio from '../assets/hit.mp3';
 import missAudio from '../assets/miss.mp3';
+import soundtrackAudio from '../assets/soundtrack.mp3';
 
 const somHit = new Audio(hitAudio);
 const somMiss = new Audio(missAudio);
-
+const trilhaSonora = new Audio(soundtrackAudio);
+trilhaSonora.loop = true;
+trilhaSonora.volume = 0.1; 
 somHit.volume = 0.5; 
 somMiss.volume = 0.5;
 
@@ -31,6 +34,11 @@ export default function Game() {
   const [campaignStage, setCampaignStage] = useState(() => {
     return parseInt(localStorage.getItem('campaignStage')) || 1;
   });
+  const startMusic = () => {
+  if (trilhaSonora.paused) {
+    trilhaSonora.play().catch(err => console.log("Aguardando interação..."));
+  }
+};
 
   // 1. Cronômetro de Partida
   useEffect(() => {
@@ -77,6 +85,7 @@ export default function Game() {
   }, []);
 
   const handlePlayerAttack = async (idx) => {
+    startMusic();
     if (!isMyTurn || gameState?.state !== 'playing') return;
     setAnimatingIndex(idx);
     const row = Math.floor(idx / 10);
